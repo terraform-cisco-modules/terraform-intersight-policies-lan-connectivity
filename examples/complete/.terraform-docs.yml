@@ -1,0 +1,35 @@
+version: '>= 0.14.0'
+
+formatter: markdown table
+
+content: |-
+  # LAN Connectivity Policy Example
+
+  To run this example you need to execute:
+
+  ```bash
+  $ terraform init
+  $ terraform plan
+  $ terraform apply
+  ```
+
+  Note that this example will create resources. Resources can be destroyed with `terraform destroy`.
+
+  ### main.tf
+  ```hcl
+  {{ include "./main.tf" }}
+  ```
+
+  ### provider.tf
+  ```hcl
+  {{ include "./provider.tf" }}
+  ```
+
+  ### variables.tf
+  ```hcl
+  {{ include "./variables.tf" }}
+  ```
+
+output:
+  file: README.md
+  mode: replace
