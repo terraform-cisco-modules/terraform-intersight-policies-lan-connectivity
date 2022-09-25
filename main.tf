@@ -111,17 +111,17 @@ locals {
 
 data "intersight_fabric_eth_network_control_policy" "ethernet_network_control" {
   for_each = { for v in local.ethernet_network_control_policies : v => v }
-  name = each.value
+  name     = each.value
 }
 
 data "intersight_fabric_eth_network_group_policy" "ethernet_network_group" {
   for_each = { for v in local.ethernet_network_group_policies : v => v }
-  name = each.value
+  name     = each.value
 }
 
 data "intersight_macpool_pool" "mac" {
   for_each = { for v in local.mac_pools : v => v }
-  name = each.value
+  name     = each.value
 }
 
 data "intersight_vnic_eth_adapter_policy" "ethernet_adapter" {
@@ -130,17 +130,17 @@ data "intersight_vnic_eth_adapter_policy" "ethernet_adapter" {
 
 data "intersight_vnic_eth_network_policy" "ethernet_network" {
   for_each = { for v in local.ethernet_network_policies : v => v }
-  name = each.value
+  name     = each.value
 }
 
 data "intersight_vnic_eth_qos_policy" "ethernet_qos" {
   for_each = { for v in local.ethernet_qos_policies : v => v }
-  name = each.value
+  name     = each.value
 }
 
 data "intersight_vnic_iscsi_boot_policy" "iscsi_boot" {
   for_each = { for v in local.iscsi_boot : v => v }
-  name = each.value
+  name     = each.value
 }
 
 resource "intersight_vnic_eth_if" "vnics" {
