@@ -110,37 +110,65 @@ locals {
 }
 
 data "intersight_fabric_eth_network_control_policy" "ethernet_network_control" {
-  for_each = { for v in local.ethernet_network_control_policies : v => v }
-  name     = each.value
+  for_each = {
+    for v in local.ethernet_network_control_policies : v => v if length(
+      regexall("[[:xdigit:]]{24}", v)
+    ) == 0
+  }
+  name = each.value
 }
 
 data "intersight_fabric_eth_network_group_policy" "ethernet_network_group" {
-  for_each = { for v in local.ethernet_network_group_policies : v => v }
-  name     = each.value
+  for_each = {
+    for v in local.ethernet_network_group_policies : v => v if length(
+      regexall("[[:xdigit:]]{24}", v)
+    ) == 0
+  }
+  name = each.value
 }
 
 data "intersight_macpool_pool" "mac" {
-  for_each = { for v in local.mac_pools : v => v }
-  name     = each.value
+  for_each = {
+    for v in local.mac_pools : v => v if length(
+      regexall("[[:xdigit:]]{24}", v)
+    ) == 0
+  }
+  name = each.value
 }
 
 data "intersight_vnic_eth_adapter_policy" "ethernet_adapter" {
-  for_each = { for v in local.ethernet_adapter_policies : v => v }
+  for_each = {
+    for v in local.ethernet_adapter_policies : v => v if length(
+      regexall("[[:xdigit:]]{24}", v)
+    ) == 0
+  }
 }
 
 data "intersight_vnic_eth_network_policy" "ethernet_network" {
-  for_each = { for v in local.ethernet_network_policies : v => v }
-  name     = each.value
+  for_each = {
+    for v in local.ethernet_network_policies : v => v if length(
+      regexall("[[:xdigit:]]{24}", v)
+    ) == 0
+  }
+  name = each.value
 }
 
 data "intersight_vnic_eth_qos_policy" "ethernet_qos" {
-  for_each = { for v in local.ethernet_qos_policies : v => v }
-  name     = each.value
+  for_each = {
+    for v in local.ethernet_qos_policies : v => v if length(
+      regexall("[[:xdigit:]]{24}", v)
+    ) == 0
+  }
+  name = each.value
 }
 
 data "intersight_vnic_iscsi_boot_policy" "iscsi_boot" {
-  for_each = { for v in local.iscsi_boot : v => v }
-  name     = each.value
+  for_each = {
+    for v in local.iscsi_boot : v => v if length(
+      regexall("[[:xdigit:]]{24}", v)
+    ) == 0
+  }
+  name = each.value
 }
 
 resource "intersight_vnic_eth_if" "vnics" {
@@ -165,17 +193,23 @@ resource "intersight_vnic_eth_if" "vnics" {
     nr_source = each.value.cdn_source
   }
   eth_adapter_policy {
-    moid = data.intersight_vnic_eth_adapter_policy.ethernet_adapter[
+    moid = length(
+      regexall("[[:xdigit:]]{24}", each.value.ethernet_adapter_policy)
+      ) > 0 ? each.value.ethernet_adapter_policy : data.intersight_vnic_eth_adapter_policy.ethernet_adapter[
       each.value.ethernet_adapter_policy
     ].results[0].moid
   }
   eth_qos_policy {
-    moid = data.intersight_vnic_eth_qos_policy.ethernet_qos[
+    moid = length(
+      regexall("[[:xdigit:]]{24}", each.value.ethernet_qos_policy)
+      ) > 0 ? each.value.ethernet_qos_policy : data.intersight_vnic_eth_qos_policy.ethernet_qos[
       each.value.ethernet_qos_policy
     ].results[0].moid
   }
   fabric_eth_network_control_policy {
-    moid = data.intersight_fabric_eth_network_control_policy.ethernet_network_control[
+    moid = length(
+      regexall("[[:xdigit:]]{24}", each.value.ethernet_network_control_policy)
+      ) > 0 ? each.value.ethernet_network_control_policy : data.intersight_fabric_eth_network_control_policy.ethernet_network_control[
       each.value.ethernet_network_control_policy
     ].results[0].moid
   }
@@ -193,7 +227,9 @@ resource "intersight_vnic_eth_if" "vnics" {
     nr_count = each.value.usnic_number_of_usnics
     usnic_adapter_policy = length(
       regexall("[a-zA-Z0-9]+", each.value.usnic_adapter_policy)
-      ) > 0 ? data.intersight_vnic_eth_adapter_policy.ethernet_adapter[
+      ) > 0 ? length(
+      regexall("[[:xdigit:]]{24}", each.value.usnic_adapter_policy)
+      ) > 0 ? each.value.usnic_adapter_policy : data.intersight_vnic_eth_adapter_policy.ethernet_adapter[
       each.value.usnic_adapter_policy
     ].results[0].moid : ""
   }
@@ -205,14 +241,18 @@ resource "intersight_vnic_eth_if" "vnics" {
     num_sub_vnics       = each.value.vmq_number_of_sub_vnics
     vmmq_adapter_policy = length(
       regexall("[a-zA-Z0-9]+", each.value.vmq_vmmq_adapter_policy)
-      ) > 0 ? data.intersight_vnic_eth_adapter_policy.ethernet_adapter[
+      ) > 0 ? length(
+      regexall("[[:xdigit:]]{24}", each.value.vmq_vmmq_adapter_policy)
+      ) > 0 ? each.value.vmq_vmmq_adapter_policy : data.intersight_vnic_eth_adapter_policy.ethernet_adapter[
       each.value.vmq_vmmq_adapter_policy
     ].results[0].moid : ""
   }
   dynamic "eth_network_policy" {
     for_each = { for v in compact([each.value.ethernet_network_policy]) : v => v }
     content {
-      moid = data.intersight_vnic_eth_network_policy.ethernet_network[
+      moid = length(
+        regexall("[[:xdigit:]]{24}", eth_network_policy.value)
+        ) > 0 ? eth_network_policy.value : data.intersight_vnic_eth_network_policy.ethernet_network[
         eth_network_policy.value
       ].results[0].moid
     }
@@ -220,7 +260,9 @@ resource "intersight_vnic_eth_if" "vnics" {
   dynamic "fabric_eth_network_group_policy" {
     for_each = { for v in compact([each.value.ethernet_network_group_policy]) : v => v }
     content {
-      moid = data.intersight_fabric_eth_network_group_policy.ethernet_network_group[
+      moid = length(
+        regexall("[[:xdigit:]]{24}", fabric_eth_network_group_policy.value)
+        ) > 0 ? fabric_eth_network_group_policy.value : data.intersight_fabric_eth_network_group_policy.ethernet_network_group[
         fabric_eth_network_group_policy.value
       ].results[0].moid
     }
