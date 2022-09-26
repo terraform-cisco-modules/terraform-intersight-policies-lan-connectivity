@@ -13,6 +13,15 @@ data "intersight_organization_organization" "org_moid" {
   name = each.value
 }
 
+data "intersight_iqnpool_pool" "iqn" {
+  for_each = {
+    for v in compact([var.iqn_pool]) : v => v if length(
+      regexall("[[:xdigit:]]{24}", v)
+    ) == 0
+  }
+  name = each.value
+}
+
 #____________________________________________________________
 #
 # Intersight UCS Server Profile(s) Data Source
@@ -43,6 +52,7 @@ data "intersight_server_profile_template" "templates" {
 
 resource "intersight_vnic_lan_connectivity_policy" "lan_connectivity" {
   depends_on = [
+    data.intersight_iqnpool_pool.iqn,
     data.intersight_server_profile.profiles,
     data.intersight_server_profile_template.templates,
     data.intersight_organization_organization.org_moid
@@ -63,9 +73,11 @@ resource "intersight_vnic_lan_connectivity_policy" "lan_connectivity" {
     object_type = "organization.Organization"
   }
   dynamic "iqn_pool" {
-    for_each = var.iqn_pool
+    for_each = toset(compact([var.iqn_pool]))
     content {
-      moid = iqn_pool.value
+      moid = length(
+        regexall("[[:xdigit:]]{24}", iqn_pool.value)
+      ) > 0 ? iqn_pool.value : data.intersight_iqnpool_pool.iqn[iqn_pool.value].moid
     }
   }
   dynamic "profiles" {
@@ -283,7 +295,9 @@ resource "intersight_vnic_eth_if" "vnics" {
       ) : v => v if each.value.mac_address_allocation_type == "POOL"
     }
     content {
-      moid = data.intersight_macpool_pool.mac[mac_pool.value].results[0].moid
+      moid = length(
+        regexall("[[:xdigit:]]{24}", mac_pool.value)
+      ) > 0 ? mac_pool.value : data.intersight_macpool_pool.mac[mac_pool.value].results[0].moid
     }
   }
   dynamic "tags" {
