@@ -12,18 +12,15 @@ module "lan_connectivity" {
   vnics = [
     {
       cdn_source                      = "vnic"
-      enable_failover                 = false
       ethernet_adapter_policy         = "default"
       ethernet_network_control_policy = "default"
       ethernet_network_group_policy   = "default"
       ethernet_qos_policy             = "default"
       mac_address_allocation_type     = "POOL"
-      mac_address_pool                = "default"
-      name                            = "MGMT-A"
-      placement_pci_link              = 0
-      placement_pci_order             = 2
+      mac_address_pools               = ["default", "default"]
+      names                           = ["MGMT-A", "MGMT-B"]
+      placement_pci_order             = [2, 3]
       placement_slot_id               = "MLOM"
-      placement_switch_id             = "A"
     }
   ]
 }

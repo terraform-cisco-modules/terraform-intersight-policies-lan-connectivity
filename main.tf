@@ -106,19 +106,56 @@ resource "intersight_vnic_lan_connectivity_policy" "lan_connectivity" {
 #_________________________________________________________________________
 
 locals {
+  # Loop to Split vNICs defined as a Pair
+  vnics = flatten([
+    for v in var.vnics : [
+      for s in range(length(v.names)) : {
+        cdn_source                      = v.cdn_source
+        cdn_value                       = length(v.cdn_values) > 0 ? element(v.cdn_values, s) : ""
+        enable_failover                 = length(v.names) == 1 ? true : false
+        ethernet_adapter_policy         = v.ethernet_adapter_policy
+        ethernet_network_control_policy = v.ethernet_network_control_policy
+        ethernet_network_group_policy   = v.ethernet_network_group_policy
+        ethernet_network_policy         = v.ethernet_network_policy
+        ethernet_qos_policy             = v.ethernet_qos_policy
+        iscsi_boot_policy               = v.iscsi_boot_policy
+        mac_address_allocation_type     = v.mac_address_allocation_type
+        mac_address_pool                = length(v.mac_address_pools) > 0 ? element(v.mac_address_pools, s) : ""
+        mac_address_static              = length(v.mac_address_statics) > 0 ? element(v.mac_address_statics, s) : ""
+        name                            = element(v.names, s)
+        placement_pci_link              = v.placement_pci_link
+        placement_pci_order             = element(v.placement_pci_order, s)
+        placement_slot_id               = v.placement_slot_id
+        placement_switch_id = length(compact(
+          [v.placement_switch_id])
+        ) > 0 ? v.placement_switch_id : index(v.names, element([v.names], s)) == 0 ? "A" : "B"
+        placement_uplink_port                  = v.placement_uplink_port
+        usnic_adapter_policy                   = v.usnic_adapter_policy
+        usnic_class_of_service                 = v.usnic_class_of_service
+        usnic_number_of_usnics                 = v.usnic_number_of_usnics
+        vmq_enable_virtual_machine_multi_queue = v.vmq_enable_virtual_machine_multi_queue
+        vmq_enabled                            = v.vmq_enabled
+        vmq_number_of_interrupts               = v.vmq_number_of_interrupts
+        vmq_number_of_sub_vnics                = v.vmq_number_of_sub_vnics
+        vmq_number_of_virtual_machine_queues   = v.vmq_number_of_virtual_machine_queues
+        vmq_vmmq_adapter_policy                = v.vmq_vmmq_adapter_policy
+      }
+    ]
+  ])
+
   ethernet_adapter_policies = toset(compact(flatten([
-    for v in var.vnics : [v.ethernet_adapter_policy, v.usnic_adapter_policy]]))
+    for v in local.vnics : [v.ethernet_adapter_policy, v.usnic_adapter_policy]]))
   )
-  ethernet_network_policies = toset(compact([for v in var.vnics : v.ethernet_network_policy]))
+  ethernet_network_policies = toset(compact([for v in local.vnics : v.ethernet_network_policy]))
   ethernet_network_control_policies = toset(
-    compact([for v in var.vnics : v.ethernet_network_control_policy])
+    compact([for v in local.vnics : v.ethernet_network_control_policy])
   )
   ethernet_network_group_policies = toset(
-    compact([for v in var.vnics : v.ethernet_network_group_policy])
+    compact([for v in local.vnics : v.ethernet_network_group_policy])
   )
-  ethernet_qos_policies = toset(compact([for v in var.vnics : v.ethernet_qos_policy]))
-  iscsi_boot            = toset(compact([for v in var.vnics : v.iscsi_boot_policy]))
-  mac_pools             = toset(compact([for v in var.vnics : v.mac_address_pool]))
+  ethernet_qos_policies = toset(compact([for v in local.vnics : v.ethernet_qos_policy]))
+  iscsi_boot            = toset(compact([for v in local.vnics : v.iscsi_boot_policy]))
+  mac_pools             = toset(compact([for v in local.vnics : v.mac_address_pool]))
 }
 
 data "intersight_fabric_eth_network_control_policy" "ethernet_network_control" {
@@ -193,7 +230,7 @@ resource "intersight_vnic_eth_if" "vnics" {
     data.intersight_vnic_iscsi_boot_policy.iscsi_boot,
     intersight_vnic_lan_connectivity_policy.lan_connectivity
   ]
-  for_each         = { for v in var.vnics : v.name => v }
+  for_each         = { for v in local.vnics : v.name => v }
   failover_enabled = each.value.enable_failover
   mac_address_type = each.value.mac_address_allocation_type
   name             = each.key

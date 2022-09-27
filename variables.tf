@@ -95,46 +95,13 @@ variable "vnic_placement_mode" {
 #____________________________________________________________
 
 variable "vnics" {
-  default = [
-    /*
-    {
-      cdn_source                             = "vnic"
-      cdn_value                              = ""
-      enable_failover                        = false
-      ethernet_adapter_policy                = "**REQUIRED**"
-      ethernet_network_control_policy        = "**REQUIRED**"
-      ethernet_network_group_policy          = ""
-      ethernet_network_policy                = ""
-      ethernet_qos_policy                    = "**REQUIRED**"
-      iscsi_boot_policy                      = ""
-      mac_address_allocation_type            = "POOL"
-      mac_address_pool                       = ""
-      mac_address_static                     = ""
-      name                                   = "vnic"
-      placement_pci_link                     = 0
-      placement_pci_order                    = 0
-      placement_slot_id                      = "MLOM"
-      placement_switch_id                    = "None"
-      placement_uplink_port                  = 0
-      usnic_adapter_policy                   = ""
-      usnic_class_of_service                 = 5
-      usnic_number_of_usnics                 = 0
-      vmq_enable_virtual_machine_multi_queue = false
-      vmq_enabled                            = false
-      vmq_number_of_interrupts               = 16
-      vmq_number_of_sub_vnics                = 64
-      vmq_number_of_virtual_machine_queues   = 4
-      vmq_vmmq_adapter_policy                = ""
-    }
-    */
-  ]
+  default     = []
   description = <<-EOT
     List of VNICs to add to the LAN Connectivity Policy.
     * cdn_source - Default is vnic.  Source of the CDN. It can either be user specified or be the same as the vNIC name.
       1. user - Source of the CDN is specified by the user.
       2. vnic - Source of the CDN is the same as the vNIC name.
-    * cdn_value - The CDN value entered in case of user defined mode.
-    * enable_failover - Default is false.  Setting this to true ensures that the traffic failover from one uplink to another auotmatically in case of an uplink failure. It is applicable for Cisco VIC adapters only which are connected to Fabric Interconnect cluster. The uplink if specified determines the primary uplink in case of a failover.
+    * cdn_values - The CDN value(s) entered in case user defined mode.
     * ethernet_adapter_policy - The Name of the Ethernet Adapter Policy to Assign to the vNIC.
     * ethernet_network_control_policy - The Name of the Ethernet Network Control Policy to Assign to the vNIC.
     * ethernet_network_group_policy - The Name of the Ethernet Network Group Policy to Assign to the vNIC.  This Policy is for FIAttached Only.
@@ -148,7 +115,7 @@ variable "vnics" {
     * mac_address_static - The MAC address must be in hexadecimal format xx:xx:xx:xx:xx:xx.To ensure uniqueness of MACs in the LAN fabric, you are strongly encouraged to use thefollowing MAC prefix 00:25:B5:xx:xx:xx.
     * name - Name of the vNIC.
     * placement_pci_link - Default is 0.  The PCI Link used as transport for the virtual interface. All VIC adapters have a single PCI link except VIC 1385 which has two.
-    * placement_pci_order - Default is 0.  The order in which the virtual interface is brought up. The order assigned to an interface should be unique for all the Ethernet and Fibre-Channel interfaces on each PCI link on a VIC adapter. The maximum value of PCI order is limited by the number of virtual interfaces (Ethernet and Fibre-Channel) on each PCI link on a VIC adapter. All VIC adapters have a single PCI link except VIC 1385 which has two.
+    * placement_pci_order: (default is [2, 3]) - The order in which the virtual interface is brought up. The order assigned to an interface should be unique for all the Ethernet and Fibre-Channel interfaces on each PCI link on a VIC adapter. The maximum value of PCI order is limited by the number of virtual interfaces (Ethernet and Fibre-Channel) on each PCI link on a VIC adapter. All VIC adapters have a single PCI link except VIC 1385 which has two.
     * placement_slot_id - Default is MLOM.  PCIe Slot where the VIC adapter is installed. Supported values are (1-15) and MLOM.
     * placement_switch_id - Default is None.  The fabric port to which the vNICs will be associated.
       1. A - Fabric A of the FI cluster.
@@ -168,8 +135,7 @@ variable "vnics" {
   type = list(object(
     {
       cdn_source                             = optional(string, "vnic")
-      cdn_value                              = optional(string)
-      enable_failover                        = optional(bool, false)
+      cdn_values                             = optional(list(string), [])
       ethernet_adapter_policy                = string
       ethernet_network_control_policy        = string
       ethernet_network_group_policy          = optional(string)
@@ -177,11 +143,11 @@ variable "vnics" {
       ethernet_qos_policy                    = string
       iscsi_boot_policy                      = optional(string, "")
       mac_address_allocation_type            = optional(string, "POOL")
-      mac_address_pool                       = optional(string)
-      mac_address_static                     = optional(string)
-      name                                   = string
+      mac_address_pools                      = optional(list(string), [])
+      mac_address_static                     = optional(list(string), [])
+      names                                  = list(string)
       placement_pci_link                     = optional(number, 0)
-      placement_pci_order                    = optional(number, 0)
+      placement_pci_order                    = optional(list(string), [2, 3])
       placement_slot_id                      = optional(string, "MLOM")
       placement_switch_id                    = optional(string, "A")
       placement_uplink_port                  = optional(number, 0)
