@@ -35,7 +35,7 @@ module "lan_connectivity" {
       mac_address_pools               = ["default", "default"]
       names                           = ["MGMT-A", "MGMT-B"]
       placement_pci_order             = [2, 3]
-      placement_slot_id               = "MLOM"
+      placement_slot_id               = ["MLOM"]
     }
   ]
 }
