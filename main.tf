@@ -121,15 +121,21 @@ locals {
         iscsi_boot_policy               = v.iscsi_boot_policy
         mac_address_allocation_type     = v.mac_address_allocation_type
         mac_address_pool                = length(v.mac_address_pools) > 0 ? element(v.mac_address_pools, s) : ""
-        mac_address_static              = length(v.mac_address_statics) > 0 ? element(v.mac_address_statics, s) : ""
+        mac_address_static              = length(v.mac_address_static) > 0 ? element(v.mac_address_static, s) : ""
         name                            = element(v.names, s)
-        placement_pci_link              = v.placement_pci_link
-        placement_pci_order             = element(v.placement_pci_order, s)
-        placement_slot_id               = v.placement_slot_id
+        placement_pci_link = length(v.placement_pci_link) == 1 ? element(
+          v.placement_pci_link, 0) : element(v.placement_pci_link, s
+        )
+        placement_pci_order = element(v.placement_pci_order, s)
+        placement_slot_id = length(v.placement_slot_id) == 1 ? element(
+          v.placement_slot_id, 0) : element(v.placement_slot_id, s
+        )
         placement_switch_id = length(compact(
           [v.placement_switch_id])
         ) > 0 ? v.placement_switch_id : index(v.names, element([v.names], s)) == 0 ? "A" : "B"
-        placement_uplink_port                  = v.placement_uplink_port
+        placement_uplink_port = length(v.placement_uplink_port) == 1 ? element(
+          v.placement_uplink_port, 0) : element(v.placement_uplink_port, s
+        )
         usnic_adapter_policy                   = v.usnic_adapter_policy
         usnic_class_of_service                 = v.usnic_class_of_service
         usnic_number_of_usnics                 = v.usnic_number_of_usnics
@@ -144,7 +150,11 @@ locals {
   ])
 
   ethernet_adapter_policies = toset(compact(flatten([
-    for v in local.vnics : [v.ethernet_adapter_policy, v.usnic_adapter_policy]]))
+    for v in local.vnics : [
+      v.ethernet_adapter_policy,
+      v.usnic_adapter_policy,
+      v.vmq_vmmq_adapter_policy
+    ]]))
   )
   ethernet_network_policies = toset(compact([for v in local.vnics : v.ethernet_network_policy]))
   ethernet_network_control_policies = toset(
@@ -274,8 +284,7 @@ resource "intersight_vnic_eth_if" "vnics" {
   usnic_settings {
     cos      = each.value.usnic_class_of_service
     nr_count = each.value.usnic_number_of_usnics
-    usnic_adapter_policy = length(
-      regexall("[a-zA-Z0-9]+", each.value.usnic_adapter_policy)
+    usnic_adapter_policy = length(compact([each.value.usnic_adapter_policy])
       ) > 0 ? length(
       regexall("[[:xdigit:]]{24}", each.value.usnic_adapter_policy)
       ) > 0 ? each.value.usnic_adapter_policy : data.intersight_vnic_eth_adapter_policy.ethernet_adapter[
@@ -288,8 +297,7 @@ resource "intersight_vnic_eth_if" "vnics" {
     num_interrupts      = each.value.vmq_number_of_interrupts
     num_vmqs            = each.value.vmq_number_of_virtual_machine_queues
     num_sub_vnics       = each.value.vmq_number_of_sub_vnics
-    vmmq_adapter_policy = length(
-      regexall("[a-zA-Z0-9]+", each.value.vmq_vmmq_adapter_policy)
+    vmmq_adapter_policy = length(compact([each.value.vmq_vmmq_adapter_policy])
       ) > 0 ? length(
       regexall("[[:xdigit:]]{24}", each.value.vmq_vmmq_adapter_policy)
       ) > 0 ? each.value.vmq_vmmq_adapter_policy : data.intersight_vnic_eth_adapter_policy.ethernet_adapter[
