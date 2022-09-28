@@ -39,7 +39,7 @@ variable "iqn_static_identifier" {
 }
 
 variable "name" {
-  default     = "lan_connectivity"
+  default     = "default"
   description = "Name for the Policy."
   type        = string
 }

@@ -132,7 +132,7 @@ locals {
         )
         placement_switch_id = length(compact(
           [v.placement_switch_id])
-        ) > 0 ? v.placement_switch_id : index(v.names, element([v.names], s)) == 0 ? "A" : "B"
+        ) > 0 ? v.placement_switch_id : index(v.names, element(v.names, s)) == 0 ? "A" : "B"
         placement_uplink_port = length(v.placement_uplink_port) == 1 ? element(
           v.placement_uplink_port, 0) : element(v.placement_uplink_port, s
         )
