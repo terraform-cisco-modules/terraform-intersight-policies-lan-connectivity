@@ -5,22 +5,17 @@
 #____________________________________________________________
 
 data "intersight_organization_organization" "org_moid" {
-  for_each = {
-    for v in [var.organization] : v => v if length(
-      regexall("[[:xdigit:]]{24}", var.organization)
-    ) == 0
-  }
-  name = each.value
+  for_each = { for v in [var.organization] : v => v if var.moids == false }
+  name     = each.value
 }
 
 data "intersight_iqnpool_pool" "iqn" {
   for_each = {
-    for v in compact([var.iqn_pool]) : v => v if length(
-      regexall("[[:xdigit:]]{24}", v)
-    ) == 0
+    for v in compact([var.iqn_pool]) : v => v if var.moids == false
   }
   name = each.value
 }
+
 
 #____________________________________________________________
 #
@@ -65,19 +60,18 @@ resource "intersight_vnic_lan_connectivity_policy" "lan_connectivity" {
   static_iqn_name     = var.iqn_static_identifier
   target_platform     = var.target_platform
   organization {
-    moid = length(
-      regexall("[[:xdigit:]]{24}", var.organization)
+    moid = length(regexall(true, var.moids)
       ) > 0 ? var.organization : data.intersight_organization_organization.org_moid[
       var.organization].results[0
     ].moid
     object_type = "organization.Organization"
   }
   dynamic "iqn_pool" {
-    for_each = toset(compact([var.iqn_pool]))
+    for_each = { for v in compact([var.iqn_pool]) : v.name => v }
     content {
-      moid = length(
-        regexall("[[:xdigit:]]{24}", iqn_pool.value)
-      ) > 0 ? iqn_pool.value : data.intersight_iqnpool_pool.iqn[iqn_pool.value].moid
+      moid = length(regexall(true, var.moids)) > 0 ? var.pools.iqn[
+        iqn_pool.value
+      ].moid : data.intersight_iqnpool_pool.iqn[iqn_pool.value].moid
     }
   }
   dynamic "profiles" {
@@ -170,62 +164,48 @@ locals {
 
 data "intersight_fabric_eth_network_control_policy" "ethernet_network_control" {
   for_each = {
-    for v in local.ethernet_network_control_policies : v => v if length(
-      regexall("[[:xdigit:]]{24}", v)
-    ) == 0
+    for v in local.ethernet_network_control_policies : v => v if var.moids == false
   }
   name = each.value
 }
 
 data "intersight_fabric_eth_network_group_policy" "ethernet_network_group" {
   for_each = {
-    for v in local.ethernet_network_group_policies : v => v if length(
-      regexall("[[:xdigit:]]{24}", v)
-    ) == 0
+    for v in local.ethernet_network_group_policies : v => v if var.moids == false
   }
   name = each.value
 }
 
 data "intersight_macpool_pool" "mac" {
   for_each = {
-    for v in local.mac_pools : v => v if length(
-      regexall("[[:xdigit:]]{24}", v)
-    ) == 0
+    for v in local.mac_pools : v => v if var.moids == false
   }
   name = each.value
 }
 
 data "intersight_vnic_eth_adapter_policy" "ethernet_adapter" {
   for_each = {
-    for v in local.ethernet_adapter_policies : v => v if length(
-      regexall("[[:xdigit:]]{24}", v)
-    ) == 0
+    for v in local.ethernet_adapter_policies : v => v if var.moids == false
   }
 }
 
 data "intersight_vnic_eth_network_policy" "ethernet_network" {
   for_each = {
-    for v in local.ethernet_network_policies : v => v if length(
-      regexall("[[:xdigit:]]{24}", v)
-    ) == 0
+    for v in local.ethernet_network_policies : v => v if var.moids == false
   }
   name = each.value
 }
 
 data "intersight_vnic_eth_qos_policy" "ethernet_qos" {
   for_each = {
-    for v in local.ethernet_qos_policies : v => v if length(
-      regexall("[[:xdigit:]]{24}", v)
-    ) == 0
+    for v in local.ethernet_qos_policies : v => v if var.moids == false
   }
   name = each.value
 }
 
 data "intersight_vnic_iscsi_boot_policy" "iscsi_boot" {
   for_each = {
-    for v in local.iscsi_boot : v => v if length(
-      regexall("[[:xdigit:]]{24}", v)
-    ) == 0
+    for v in local.iscsi_boot : v => v if var.moids == false
   }
   name = each.value
 }
@@ -252,23 +232,23 @@ resource "intersight_vnic_eth_if" "vnics" {
     nr_source = each.value.cdn_source
   }
   eth_adapter_policy {
-    moid = length(
-      regexall("[[:xdigit:]]{24}", each.value.ethernet_adapter_policy)
-      ) > 0 ? each.value.ethernet_adapter_policy : data.intersight_vnic_eth_adapter_policy.ethernet_adapter[
+    moid = length(regexall(true, var.moids)) > 0 ? var.policies.ethernet_adapter[
+      each.value.ethernet_adapter_policy
+      ].moid : data.intersight_vnic_eth_adapter_policy.ethernet_adapter[
       each.value.ethernet_adapter_policy
     ].results[0].moid
   }
   eth_qos_policy {
-    moid = length(
-      regexall("[[:xdigit:]]{24}", each.value.ethernet_qos_policy)
-      ) > 0 ? each.value.ethernet_qos_policy : data.intersight_vnic_eth_qos_policy.ethernet_qos[
+    moid = length(regexall(true, var.moids)) > 0 ? var.policies.ethernet_qos[
+      each.value.ethernet_qos_policy
+      ].moid : data.intersight_vnic_eth_qos_policy.ethernet_qos[
       each.value.ethernet_qos_policy
     ].results[0].moid
   }
   fabric_eth_network_control_policy {
-    moid = length(
-      regexall("[[:xdigit:]]{24}", each.value.ethernet_network_control_policy)
-      ) > 0 ? each.value.ethernet_network_control_policy : data.intersight_fabric_eth_network_control_policy.ethernet_network_control[
+    moid = length(regexall(true, var.moids)) > 0 ? var.policies.ethernet_network_control[
+      each.value.ethernet_network_control_policy
+      ].moid : data.intersight_fabric_eth_network_control_policy.ethernet_network_control[
       each.value.ethernet_network_control_policy
     ].results[0].moid
   }
@@ -285,9 +265,9 @@ resource "intersight_vnic_eth_if" "vnics" {
     cos      = each.value.usnic_class_of_service
     nr_count = each.value.usnic_number_of_usnics
     usnic_adapter_policy = length(compact([each.value.usnic_adapter_policy])
-      ) > 0 ? length(
-      regexall("[[:xdigit:]]{24}", each.value.usnic_adapter_policy)
-      ) > 0 ? each.value.usnic_adapter_policy : data.intersight_vnic_eth_adapter_policy.ethernet_adapter[
+      ) > 0 ? length(regexall(true, var.moids)) > 0 ? var.policies.ethernet_adapter[
+      each.value.usnic_adapter_policy
+      ].moid : data.intersight_vnic_eth_adapter_policy.ethernet_adapter[
       each.value.usnic_adapter_policy
     ].results[0].moid : ""
   }
@@ -298,18 +278,18 @@ resource "intersight_vnic_eth_if" "vnics" {
     num_vmqs            = each.value.vmq_number_of_virtual_machine_queues
     num_sub_vnics       = each.value.vmq_number_of_sub_vnics
     vmmq_adapter_policy = length(compact([each.value.vmq_vmmq_adapter_policy])
-      ) > 0 ? length(
-      regexall("[[:xdigit:]]{24}", each.value.vmq_vmmq_adapter_policy)
-      ) > 0 ? each.value.vmq_vmmq_adapter_policy : data.intersight_vnic_eth_adapter_policy.ethernet_adapter[
+      ) > 0 ? length(regexall(true, var.moids)) > 0 ? var.policies.ethernet_adapter[
+      each.value.vmq_vmmq_adapter_policy
+      ].moid : data.intersight_vnic_eth_adapter_policy.ethernet_adapter[
       each.value.vmq_vmmq_adapter_policy
     ].results[0].moid : ""
   }
   dynamic "eth_network_policy" {
     for_each = { for v in compact([each.value.ethernet_network_policy]) : v => v }
     content {
-      moid = length(
-        regexall("[[:xdigit:]]{24}", eth_network_policy.value)
-        ) > 0 ? eth_network_policy.value : data.intersight_vnic_eth_network_policy.ethernet_network[
+      moid = length(regexall(true, var.moids)) > 0 ? var.policies.ethernet_network[
+        eth_network_policy.value
+        ].moid : data.intersight_vnic_eth_network_policy.ethernet_network[
         eth_network_policy.value
       ].results[0].moid
     }
@@ -317,9 +297,9 @@ resource "intersight_vnic_eth_if" "vnics" {
   dynamic "fabric_eth_network_group_policy" {
     for_each = { for v in compact([each.value.ethernet_network_group_policy]) : v => v }
     content {
-      moid = length(
-        regexall("[[:xdigit:]]{24}", fabric_eth_network_group_policy.value)
-        ) > 0 ? fabric_eth_network_group_policy.value : data.intersight_fabric_eth_network_group_policy.ethernet_network_group[
+      moid = length(regexall(true, var.moids)) > 0 ? var.policies.ethernet_network_group[
+        fabric_eth_network_group_policy.value
+        ].moid : data.intersight_fabric_eth_network_group_policy.ethernet_network_group[
         fabric_eth_network_group_policy.value
       ].results[0].moid
     }
@@ -327,7 +307,9 @@ resource "intersight_vnic_eth_if" "vnics" {
   dynamic "iscsi_boot_policy" {
     for_each = { for v in compact([each.value.iscsi_boot_policy]) : v => v }
     content {
-      moid = data.intersight_vnic_iscsi_boot_policy.iscsi_boot[
+      moid = length(regexall(true, var.moids)) > 0 ? var.policies.iscsi_boot[
+        iscsi_boot_policy.value
+        ].moid : data.intersight_vnic_iscsi_boot_policy.iscsi_boot[
         iscsi_boot_policy.value
       ].results[0].moid
 
@@ -340,9 +322,9 @@ resource "intersight_vnic_eth_if" "vnics" {
       ) : v => v if each.value.mac_address_allocation_type == "POOL"
     }
     content {
-      moid = length(
-        regexall("[[:xdigit:]]{24}", mac_pool.value)
-      ) > 0 ? mac_pool.value : data.intersight_macpool_pool.mac[mac_pool.value].results[0].moid
+      moid = length(regexall(true, var.moids)) > 0 ? var.pools.mac[
+        mac_pool.value
+      ].moid : data.intersight_macpool_pool.mac[mac_pool.value].results[0].moid
     }
   }
   dynamic "tags" {
