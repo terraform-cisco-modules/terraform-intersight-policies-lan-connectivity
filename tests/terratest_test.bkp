@@ -90,4 +90,107 @@ func TestFull(t *testing.T) {
 	// Moids, timestamps, etc)
 	iassert.AssertMOComply(t, fmt.Sprintf("/api/v1/vnic/LanConnectivityPolicies/%s", moid), expectedJSONTemplate, vars2)
 
+	// Setup the expected values of the returned MO.
+	// This is a Go template for the JSON object, so template variables can be used
+	expectedVNICTemplate := `
+{
+    "Name": "{{ .vnic_name }}",
+
+    "Cdn": {
+      "ClassId": "vnic.Cdn",
+      "ObjectType": "vnic.Cdn",
+      "Source": "vnic",
+      "Value": "{{ .vnic_name }}"
+    },
+    "EthAdapterPolicy": {
+      "ClassId": "mo.MoRef",
+      "Moid": "{{ .ethernet_adapter }}",
+      "ObjectType": "vnic.EthAdapterPolicy",
+      "link": "https://www.intersight.com/api/v1/vnic/EthAdapterPolicies/{{ .ethernet_adapter }}"
+    },
+    "EthQosPolicy": {
+      "ClassId": "mo.MoRef",
+      "Moid": "{{ .ethernet_qos }}",
+      "ObjectType": "vnic.EthQosPolicy",
+      "link": "https://www.intersight.com/api/v1/vnic/EthQosPolicies/{{ .ethernet_qos }}"
+    },
+    "FabricEthNetworkControlPolicy": {
+      "ClassId": "mo.MoRef",
+      "Moid": "{{ .ethernet_network_control }}",
+      "ObjectType": "fabric.EthNetworkControlPolicy",
+      "link": "https://www.intersight.com/api/v1/fabric/EthNetworkControlPolicies/{{ .ethernet_network_control }}"
+    },
+    "FabricEthNetworkGroupPolicy": [
+      {
+        "ClassId": "mo.MoRef",
+        "Moid": "{{ .ethernet_network_group }}",
+        "ObjectType": "fabric.EthNetworkGroupPolicy",
+        "link": "https://www.intersight.com/api/v1/fabric/EthNetworkGroupPolicies/{{ .ethernet_network_group }}"
+      }
+    ],
+    "FailoverEnabled": false,
+    "IscsiBootPolicy": null,
+    "IscsiIpV4AddressAllocationType": "None",
+    "IscsiIpV4Config": {
+      "ClassId": "ippool.IpV4Config",
+      "Gateway": "",
+      "Netmask": "",
+      "ObjectType": "ippool.IpV4Config",
+      "PrimaryDns": "",
+      "SecondaryDns": ""
+    },
+    "IscsiIpv4Address": "",
+    "LanConnectivityPolicy": {
+      "ClassId": "mo.MoRef",
+      "Moid": "{{ .lan_connectivity }}",
+      "ObjectType": "vnic.LanConnectivityPolicy",
+      "link": "https://www.intersight.com/api/v1/vnic/LanConnectivityPolicies/{{ .lan_connectivity }}"
+    },
+    "LcpVnic": null,
+    "MacAddress": "",
+    "MacAddressType": "POOL",
+    "MacPool": {
+      "ClassId": "mo.MoRef",
+      "Moid": "{{ .mac_pool }}",
+      "ObjectType": "macpool.Pool",
+      "link": "https://www.intersight.com/api/v1/macpool/Pools/{{ .mac_pool }}"
+    },
+    "Order": 2,
+    "Placement": {
+      "AutoPciLink": false,
+      "AutoSlotId": false,
+      "ClassId": "vnic.PlacementSettings",
+      "Id": "MLOM",
+      "ObjectType": "vnic.PlacementSettings",
+      "PciLink": 0,
+      "SwitchId": "A",
+      "Uplink": 0
+    },
+    "StandbyVifId": 0,
+    "StaticMacAddress": "",
+    "UsnicSettings": {
+      "ClassId": "vnic.UsnicSettings",
+      "Cos": 5,
+      "Count": 0,
+      "ObjectType": "vnic.UsnicSettings",
+      "UsnicAdapterPolicy": ""
+    },
+    "VifId": 0,
+    "VmqSettings": {
+      "ClassId": "vnic.VmqSettings",
+      "Enabled": false,
+      "MultiQueueSupport": false,
+      "NumInterrupts": 16,
+      "NumSubVnics": 64,
+      "NumVmqs": 4,
+      "ObjectType": "vnic.VmqSettings",
+      "VmmqAdapterPolicy": ""
+    }
+}
+`
+	// Validate that what is in the Intersight API matches the expected
+	// The AssertMOComply function only checks that what is expected is in the result. Extra fields in the
+	// result are ignored. This means we don't have to worry about things that aren't known in advance (e.g.
+	// Moids, timestamps, etc)
+	iassert.AssertMOComply(t, fmt.Sprintf("/api/v1/vnic/EthIfs/%s", vnic), expectedVNICTemplate, vars2)
 }
