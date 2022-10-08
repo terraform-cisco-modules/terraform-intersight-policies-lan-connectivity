@@ -5,11 +5,11 @@ terraform {
       version = ">=1.0.32"
     }
   }
-  required_version = ">=1.3.0"
 }
 
+# Setup provider, variables and outputs
 provider "intersight" {
   apikey    = var.apikey
   endpoint  = var.endpoint
-  secretkey = fileexists(var.secretkeyfile) ? file(var.secretkeyfile) : var.secretkey
+  secretkey = file(var.secretkeyfile)
 }

@@ -1,0 +1,27 @@
+on: [push, pull_request_target]
+name: Terratest
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Run terratests
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup go
+        uses: actions/setup-go@v3
+        with:
+          go-version: "1.18"
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: "~1.3.0"
+          terraform_wrapper: false
+      - name: Run Go test
+        env: 
+          IS_KEYID: ${{ secrets.IS_KEYID }}
+          IS_KEY: ${{ secrets.IS_KEY }}
+          IS_KEYFILE: ${{ github.workspace }}/key.pem
+        run: |
+          echo Writing Intersight key to temp file ${IS_KEYFILE}
+          echo "${IS_KEY}" | base64 -d > ${IS_KEYFILE}
+          file ${IS_KEYFILE}
+          go test -v ./tests

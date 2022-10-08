@@ -3,11 +3,19 @@ version: '>= 0.14.0'
 formatter: markdown table
 
 content: |-
+  [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+  [![Developed by: Cisco](https://img.shields.io/badge/Developed%20by-Cisco-blue)](https://developer.cisco.com)
+  [![Tests](https://github.com/terraform-cisco-modules/terraform-intersight-policies-lan-connectivity/actions/workflows/terratest.yml/badge.svg)](https://github.com/terraform-cisco-modules/terraform-intersight-policies-lan-connectivity/actions/workflows/terratest.yml)
+
   # Terraform Intersight Policies - LAN Connectivity
   Manages Intersight LAN Connectivity Policies
   
   Location in GUI:
   `Policies` » `Create Policy` » `LAN Connectivity`
+
+  ## Easy IMM
+
+  [*Easy IMM - Comprehensive Example*](https://github.com/terraform-cisco-modules/easy-imm-comprehensive-example) - A comprehensive example for policies, pools, and profiles.
 
   ## Example
 
@@ -29,21 +37,20 @@ content: |-
   ## Environment Variables
 
   ### Terraform Cloud/Enterprise - Workspace Variables
-  - Add variable apikey with value of [your-api-key]
-  - Add variable secretkey with value of [your-secret-file-content]
+  - Add variable apikey with the value of [your-api-key]
+  - Add variable secretkey with the value of [your-secret-file-content]
 
-  ### Linux
+  ### Linux and Windows
   ```bash
   export TF_VAR_apikey="<your-api-key>"
-  export TF_VAR_secretkey=`cat <secret-key-file-location>`
+  export TF_VAR_secretkeyfile="<secret-key-file-location>"
   ```
 
-  ### Windows
-  ```bash
-  $env:TF_VAR_apikey="<your-api-key>"
-  $env:TF_VAR_secretkey="<secret-key-file-location>"
-  ```
-
+  {{ .Requirements }}
+  {{ .Providers }}
+  {{ .Inputs }}
+  {{ .Outputs }}
+  {{ .Resources }}
 
 output:
   file: README.md
