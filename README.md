@@ -115,7 +115,7 @@ export TF_VAR_secretkeyfile="<secret-key-file-location>"
 
 | Name | Version |
 |------|---------|
-| <a name="provider_intersight"></a> [intersight](#provider\_intersight) | 1.0.32 |
+| <a name="provider_intersight"></a> [intersight](#provider\_intersight) | >=1.0.32 |
 ## Inputs
 
 | Name | Description | Type | Default | Required |

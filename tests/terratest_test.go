@@ -73,15 +73,15 @@ func TestFull(t *testing.T) {
 	// This is a Go template for the JSON object, so template variables can be used
 	expectedJSONTemplate := `
 {
-	"Name":        "{{ .name }}",
-	"Description": "{{ .name }} LAN Connectivity Policy.",
+    "Name":        "{{ .name }}",
+    "Description": "{{ .name }} LAN Connectivity Policy.",
 
-	"AzureQosEnabled": false,
-	"IqnAllocationType": "None",
-	"IqnPool": null,
-	"PlacementMode": "custom",
-	"StaticIqnName": "",
-	"TargetPlatform": "FIAttached"
+    "AzureQosEnabled": false,
+    "IqnAllocationType": "None",
+    "IqnPool": null,
+    "PlacementMode": "custom",
+    "StaticIqnName": "",
+    "TargetPlatform": "FIAttached"
 }
 `
 	// Validate that what is in the Intersight API matches the expected
@@ -94,98 +94,98 @@ func TestFull(t *testing.T) {
 	// This is a Go template for the JSON object, so template variables can be used
 	expectedVNICTemplate := `
 {
-  "Name":        "{{ .vnic_name }}",
+    "Name": "{{ .vnic_name }}",
 
-  "Cdn": {
-    "ClassId": "vnic.Cdn",
-    "ObjectType": "vnic.Cdn",
-    "Source": "vnic",
-    "Value": "{{ .vnic_name }}"
-  },
-  "EthAdapterPolicy": {
-    "ClassId": "mo.MoRef",
-    "Moid": "{{ .ethernet_adapter }}",
-    "ObjectType": "vnic.EthAdapterPolicy",
-    "link": "https://www.intersight.com/api/v1/vnic/EthAdapterPolicies/{{ .ethernet_adapter }}"
-  },
-  "EthQosPolicy": {
-    "ClassId": "mo.MoRef",
-    "Moid": "{{ .ethernet_qos }}",
-    "ObjectType": "vnic.EthQosPolicy",
-    "link": "https://www.intersight.com/api/v1/vnic/EthQosPolicies/{{ .ethernet_qos }}"
-  },
-  "FabricEthNetworkControlPolicy": {
-    "ClassId": "mo.MoRef",
-    "Moid": "{{ .ethernet_network_control }}",
-    "ObjectType": "fabric.EthNetworkControlPolicy",
-    "link": "https://www.intersight.com/api/v1/fabric/EthNetworkControlPolicies/{{ .ethernet_network_control }}"
-  },
-  "FabricEthNetworkGroupPolicy": [
-    {
+    "Cdn": {
+      "ClassId": "vnic.Cdn",
+      "ObjectType": "vnic.Cdn",
+      "Source": "vnic",
+      "Value": "{{ .vnic_name }}"
+    },
+    "EthAdapterPolicy": {
       "ClassId": "mo.MoRef",
-      "Moid": "{{ .ethernet_network_group }}",
-      "ObjectType": "fabric.EthNetworkGroupPolicy",
-      "link": "https://www.intersight.com/api/v1/fabric/EthNetworkGroupPolicies/{{ .ethernet_network_group }}"
+      "Moid": "{{ .ethernet_adapter }}",
+      "ObjectType": "vnic.EthAdapterPolicy",
+      "link": "https://www.intersight.com/api/v1/vnic/EthAdapterPolicies/{{ .ethernet_adapter }}"
+    },
+    "EthQosPolicy": {
+      "ClassId": "mo.MoRef",
+      "Moid": "{{ .ethernet_qos }}",
+      "ObjectType": "vnic.EthQosPolicy",
+      "link": "https://www.intersight.com/api/v1/vnic/EthQosPolicies/{{ .ethernet_qos }}"
+    },
+    "FabricEthNetworkControlPolicy": {
+      "ClassId": "mo.MoRef",
+      "Moid": "{{ .ethernet_network_control }}",
+      "ObjectType": "fabric.EthNetworkControlPolicy",
+      "link": "https://www.intersight.com/api/v1/fabric/EthNetworkControlPolicies/{{ .ethernet_network_control }}"
+    },
+    "FabricEthNetworkGroupPolicy": [
+      {
+        "ClassId": "mo.MoRef",
+        "Moid": "{{ .ethernet_network_group }}",
+        "ObjectType": "fabric.EthNetworkGroupPolicy",
+        "link": "https://www.intersight.com/api/v1/fabric/EthNetworkGroupPolicies/{{ .ethernet_network_group }}"
+      }
+    ],
+    "FailoverEnabled": false,
+    "IscsiBootPolicy": null,
+    "IscsiIpV4AddressAllocationType": "None",
+    "IscsiIpV4Config": {
+      "ClassId": "ippool.IpV4Config",
+      "Gateway": "",
+      "Netmask": "",
+      "ObjectType": "ippool.IpV4Config",
+      "PrimaryDns": "",
+      "SecondaryDns": ""
+    },
+    "IscsiIpv4Address": "",
+    "LanConnectivityPolicy": {
+      "ClassId": "mo.MoRef",
+      "Moid": "{{ .lan_connectivity }}",
+      "ObjectType": "vnic.LanConnectivityPolicy",
+      "link": "https://www.intersight.com/api/v1/vnic/LanConnectivityPolicies/{{ .lan_connectivity }}"
+    },
+    "LcpVnic": null,
+    "MacAddress": "",
+    "MacAddressType": "POOL",
+    "MacPool": {
+      "ClassId": "mo.MoRef",
+      "Moid": "{{ .mac_pool }}",
+      "ObjectType": "macpool.Pool",
+      "link": "https://www.intersight.com/api/v1/macpool/Pools/{{ .mac_pool }}"
+    },
+    "Order": 2,
+    "Placement": {
+      "AutoPciLink": false,
+      "AutoSlotId": false,
+      "ClassId": "vnic.PlacementSettings",
+      "Id": "MLOM",
+      "ObjectType": "vnic.PlacementSettings",
+      "PciLink": 0,
+      "SwitchId": "A",
+      "Uplink": 0
+    },
+    "StandbyVifId": 0,
+    "StaticMacAddress": "",
+    "UsnicSettings": {
+      "ClassId": "vnic.UsnicSettings",
+      "Cos": 5,
+      "Count": 0,
+      "ObjectType": "vnic.UsnicSettings",
+      "UsnicAdapterPolicy": ""
+    },
+    "VifId": 0,
+    "VmqSettings": {
+      "ClassId": "vnic.VmqSettings",
+      "Enabled": false,
+      "MultiQueueSupport": false,
+      "NumInterrupts": 16,
+      "NumSubVnics": 64,
+      "NumVmqs": 4,
+      "ObjectType": "vnic.VmqSettings",
+      "VmmqAdapterPolicy": ""
     }
-  ],
-  "FailoverEnabled": false,
-  "IscsiBootPolicy": null,
-  "IscsiIpV4AddressAllocationType": "None",
-  "IscsiIpV4Config": {
-    "ClassId": "ippool.IpV4Config",
-    "Gateway": "",
-    "Netmask": "",
-    "ObjectType": "ippool.IpV4Config",
-    "PrimaryDns": "",
-    "SecondaryDns": ""
-  },
-  "IscsiIpv4Address": "",
-  "LanConnectivityPolicy": {
-    "ClassId": "mo.MoRef",
-    "Moid": "{{ .lan_connectivity }}",
-    "ObjectType": "vnic.LanConnectivityPolicy",
-    "link": "https://www.intersight.com/api/v1/vnic/LanConnectivityPolicies/{{ .lan_connectivity }}"
-  },
-  "LcpVnic": null,
-  "MacAddress": "",
-  "MacAddressType": "POOL",
-  "MacPool": {
-    "ClassId": "mo.MoRef",
-    "Moid": "{{ .mac_pool }}",
-    "ObjectType": "macpool.Pool",
-    "link": "https://www.intersight.com/api/v1/macpool/Pools/{{ .mac_pool }}"
-  },
-  "Order": 2,
-  "Placement": {
-    "AutoPciLink": false,
-    "AutoSlotId": false,
-    "ClassId": "vnic.PlacementSettings",
-    "Id": "MLOM",
-    "ObjectType": "vnic.PlacementSettings",
-    "PciLink": 0,
-    "SwitchId": "A",
-    "Uplink": 0
-  },
-  "StandbyVifId": 0,
-  "StaticMacAddress": "",
-  "UsnicSettings": {
-    "ClassId": "vnic.UsnicSettings",
-    "Cos": 5,
-    "Count": 0,
-    "ObjectType": "vnic.UsnicSettings",
-    "UsnicAdapterPolicy": ""
-  },
-  "VifId": 0,
-  "VmqSettings": {
-    "ClassId": "vnic.VmqSettings",
-    "Enabled": false,
-    "MultiQueueSupport": false,
-    "NumInterrupts": 16,
-    "NumSubVnics": 64,
-    "NumVmqs": 4,
-    "ObjectType": "vnic.VmqSettings",
-    "VmmqAdapterPolicy": ""
-	}
 }
 `
 	// Validate that what is in the Intersight API matches the expected
