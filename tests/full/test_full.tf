@@ -25,7 +25,7 @@ module "ethernet_adapter" {
   organization     = "terratest"
 }
 
-module "ethernet_network_group" {
+module "ethernet_network_control" {
   source  = "terraform-cisco-modules/policies-ethernet-network-control/intersight"
   version = ">=1.0.2"
 
