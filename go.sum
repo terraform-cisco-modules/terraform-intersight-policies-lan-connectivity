@@ -58,6 +58,8 @@ github.com/cgascoig/intersight-simple-go v0.1.0 h1:98+w3+XbSL6gy5lw0DnZYtQ1udv73
 github.com/cgascoig/intersight-simple-go v0.1.0/go.mod h1:uJXALl+vQe/rUo43Zxk4GOoObhnu/7Uapqx6JRdmwYg=
 github.com/cgascoig/intersight-simple-go v0.2.0 h1:J8VoKVXSL+l7s8jklEUa/c8o4InImdZBoaIUyKqrFOI=
 github.com/cgascoig/intersight-simple-go v0.2.0/go.mod h1:uJXALl+vQe/rUo43Zxk4GOoObhnu/7Uapqx6JRdmwYg=
+github.com/cgascoig/intersight-simple-go v0.3.0 h1:CcT27Xqk7l1pDys/YPuGFUM/TXBJ6HG3OrBjDxbhJdg=
+github.com/cgascoig/intersight-simple-go v0.3.0/go.mod h1:uJXALl+vQe/rUo43Zxk4GOoObhnu/7Uapqx6JRdmwYg=
 github.com/cheggaaa/pb v1.0.27/go.mod h1:pQciLPpbU0oxA0h+VJYYLxO+XeDQb5pZijXscXHm81s=
 github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWRnGsAI=
 github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e/go.mod h1:nSuG5e5PlCu98SY8svDHJxuZscDgtXS6KTTbou5AhLI=
